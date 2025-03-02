@@ -1,20 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 import { stripe } from "../../../lib/stripe";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   console.log("YOOL");
   try {
     const origin = "http://localhost:3000";
+
+    const url = new URL(req.url);
 
     // Create Checkout Sessions from body params.
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
           // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-          price: "price_1Qxu3lQSRUzpm4LWs5L9YCMv",
-          quantity: 1,
+          price: url.searchParams.get("priceId"),
+          quantity: parseInt(url.searchParams.get("qty"), 10),
         },
       ],
       mode: "payment",
